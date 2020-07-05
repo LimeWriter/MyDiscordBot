@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -10,6 +11,16 @@ import (
 )
 
 const my_bot_client_token = "NzI5MzUwNTk0Nzk1NTM2NDA1.XwHqvA.S37s2UH0F2P9ahA1in7zc9b7ZEI"
+
+var (
+	token string
+)
+
+func init() {
+	flag.StringVar(&token, "t", "", "Bot Token")
+	flag.Parse()
+	fmt.Println(token)
+}
 
 func main() {
 	// Create discord session

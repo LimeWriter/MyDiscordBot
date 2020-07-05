@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	"bufio"
 	"fmt"
 	"os"
 	"os/signal"
@@ -10,24 +10,33 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const my_bot_client_token = "NzI5MzUwNTk0Nzk1NTM2NDA1.XwHqvA.S37s2UH0F2P9ahA1in7zc9b7ZEI"
-
 var (
 	token string
 )
 
+const my_token_filename string = "MyDiscordBotToken"
+
 func init() {
-	flag.StringVar(&token, "t", "", "Bot Token")
-	flag.Parse()
-	fmt.Println(token)
+	token_file_path := os.Getenv("HOME") + "/" + my_token_filename
+
+	file, err := os.Open(token_file_path)
+
+	if err != nil {
+		fmt.Println("Cannot open file", err)
+	}
+
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+
+	token = string(scanner.Text())
 }
 
 func main() {
 	// Create discord session
-	dg_session, err := discordgo.New("Bot " + my_bot_client_token)
+	dg_session, err := discordgo.New("Bot " + token)
 
 	if err != nil {
-		fmt.Println("error creating Discord session: ", err)
+		fmt.Println("error creating Discord session:", err)
 		return
 	}
 
@@ -37,7 +46,7 @@ func main() {
 	// Open websocket connection to Discord and begin listening.
 	err = dg_session.Open()
 	if err != nil {
-		fmt.Println("error opening connection: ", err)
+		fmt.Println("error opening connection:", err)
 	}
 
 	fmt.Println("Bot is running...")

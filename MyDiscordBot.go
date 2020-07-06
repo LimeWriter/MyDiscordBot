@@ -5,16 +5,21 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+
+	"MyDiscordBot/info"
 )
 
 var (
 	token string
 )
 
-const my_token_filename string = "MyDiscordBotToken"
+const (
+	my_token_filename string = "MyDiscordBotToken"
+)
 
 func init() {
 	token_file_path := os.Getenv("HOME") + "/" + my_token_filename
@@ -63,11 +68,18 @@ func message_handler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
+	if m.Content[0] == '!' {
+		cmd_arr := strings.Split(strings.Trim(m.Content, "!"), " ")
 
-	if m.Content == "pong" {
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
+		switch cmd_arr[0] {
+		case "ping":
+			s.ChannelMessageSend(m.ChannelID, "Pong!")
+		case "pong":
+			s.ChannelMessageSend(m.ChannelID, "pong!")
+		case "help":
+			s.ChannelMessageSend(m.ChannelID, info.Help_msg)
+		default:
+			s.ChannelMessageSend(m.ChannelID, "I do not understand.")
+		}
 	}
 }
